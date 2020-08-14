@@ -1,14 +1,15 @@
-// Package content takes static content files in a directory and creates a Go source file declaring strings with the static content.
-// Useful when you want to embed static Web content inside a Go binary.
+// Package content creates static content embedded in your Go binary, such as HTML files for a Web server.
+// You provide the static content in files; then you call GenerateContent at go generate time to create a Go source file.
+// The generated source file defines static const strings, one for each static content file.
 // The generated string for the file 'index.html' is 'index_html' for example.
 // Note: All files are read into memory, they should not be very big.
 package content
 
 import (
-	"os"
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -44,7 +45,7 @@ func GenerateContent(staticDir string, outputDir string, outputFile string, pack
 
 	_, err = staticOut.WriteTo(staticOutFile)
 	if err != nil {
-		staticOutFile.Close()
+		_ = staticOutFile.Close()
 		return fmt.Errorf("error writing Go source file '%s': %v", outputFile, err)
 	}
 
