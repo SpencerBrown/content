@@ -27,8 +27,9 @@ func GenerateContent(staticDir string, outputDir string, outputFile string, pack
 	staticOut.WriteString(fmt.Sprintf("package %s\n\n", packageName))
 
 	err := filepath.Walk(staticDir, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			stringName := strings.Replace(filepath.Base(path), ".", "_", -1)
+		filename := filepath.Base(path)
+		if !info.IsDir() && filename != outputFile {
+			stringName := strings.Replace(filename, ".", "_", -1)
 			staticOut.WriteString(fmt.Sprintf("const %s = `", initialUppercase(stringName)))
 			thisFile, err := ioutil.ReadFile(path)
 			if err != nil {
@@ -44,7 +45,7 @@ func GenerateContent(staticDir string, outputDir string, outputFile string, pack
 	if err != nil {
 		return fmt.Errorf("error creating Go source file '%s': %v", outputFile, err)
 	}
-
+	fmt.Println(staticOut)
 	_, err = staticOut.WriteTo(staticOutFile)
 	if err != nil {
 		_ = staticOutFile.Close()
