@@ -1,7 +1,8 @@
 // Package content creates static content embedded in your Go binary, such as HTML files for a Web server.
 // You provide the static content in files; then you call GenerateContent at go generate time to create a Go source file.
 // The generated source file defines static const strings, one for each static content file.
-// The generated string for the file 'index.html' is 'index_html' for example.
+// The generated string for the file 'index.html' is 'Index_html' for example.
+// The constant is in the namespace "staticContent".
 // Note: All files are read into memory, they should not be very big.
 package content
 
@@ -12,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode"
 )
 
 // GenerateContent reads all the files in a directory and writes a Go source file with strings containing the bytes in each source file. Intended to be used to incorporate static Web content into a Go binary.
@@ -27,7 +29,7 @@ func GenerateContent(staticDir string, outputDir string, outputFile string, pack
 	err := filepath.Walk(staticDir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			stringName := strings.Replace(filepath.Base(path), ".", "_", -1)
-			staticOut.WriteString(fmt.Sprintf("const %s = `", stringName))
+			staticOut.WriteString(fmt.Sprintf("const %s = `", initialUppercase(stringName)))
 			thisFile, err := ioutil.ReadFile(path)
 			if err != nil {
 				return fmt.Errorf("error reading static content file '%s': %v", path, err)
@@ -55,4 +57,13 @@ func GenerateContent(staticDir string, outputDir string, outputFile string, pack
 	}
 
 	return nil
+}
+
+func initialUppercase(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	r := []rune(s)
+	r[0] = unicode.ToUpper(r[0])
+	return string(r)
 }
