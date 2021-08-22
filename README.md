@@ -1,4 +1,6 @@
-# content - very simple Go package to create static content in Go binaries
+# DEPRECATED content - very simple Go package to create static content in Go binaries
+
+The `embed` package in Go since 1.16 should be used instead of this. 
 
 The *content* package is useful when you want to incorporate static content, such as HTML files, in your Go binary. A common use case is static HTML files or template files for a Go-based Web server.
 
